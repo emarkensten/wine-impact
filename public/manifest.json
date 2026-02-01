@@ -1,0 +1,21 @@
+{
+  "name": "VinKollen",
+  "short_name": "VinKollen",
+  "description": "Jämför klimatpåverkan av alkoholhaltiga drycker",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FAF8F3",
+  "theme_color": "#4A7C59",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
