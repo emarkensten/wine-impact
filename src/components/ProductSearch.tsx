@@ -121,7 +121,7 @@ export function ProductSearch({ onProductSelect }: ProductSearchProps) {
 
       {/* Search Results */}
       {results.length > 0 && (
-        <div className="space-y-2 max-h-[40vh] overflow-y-auto pb-2">
+        <div className="space-y-2 pb-2">
           {results.map((product) => {
             const alreadyAdded = isInList(product);
             return (

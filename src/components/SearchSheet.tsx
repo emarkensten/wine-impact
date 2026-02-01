@@ -49,18 +49,18 @@ export function SearchSheet() {
           </div>
         </DrawerTrigger>
 
-        <DrawerContent className="max-h-[calc(100dvh-40px)] rounded-t-3xl">
-          <DrawerHeader className="pb-2">
+        <DrawerContent className="max-h-[calc(100dvh-40px)] rounded-t-3xl flex flex-col">
+          <DrawerHeader className="pb-2 flex-shrink-0">
             <DrawerTitle className="text-lg font-semibold text-center">
               {viewMode === 'search' ? 'Lägg till produkt' : 'Lägg till manuellt'}
             </DrawerTitle>
           </DrawerHeader>
 
-          <div className="px-4 pb-8">
+          <div className="px-4 pb-8 flex-1 overflow-y-auto min-h-0">
             {viewMode === 'search' ? (
               <>
                 {/* Action Buttons */}
-                <div className="flex gap-2 mb-4">
+                <div className="flex gap-2 mb-4 flex-shrink-0">
                   <Button
                     variant="outline"
                     className="flex-1 h-12 rounded-xl border-eco-green/30 text-eco-green hover:bg-eco-green/10"
