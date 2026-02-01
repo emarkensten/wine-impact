@@ -49,7 +49,7 @@ export function SearchSheet() {
           </div>
         </DrawerTrigger>
 
-        <DrawerContent className="min-h-[50vh] max-h-[calc(100dvh-40px)] rounded-t-3xl flex flex-col">
+        <DrawerContent className="min-h-[85vh] max-h-[calc(100dvh-40px)] rounded-t-3xl flex flex-col">
           <DrawerHeader className="pb-2 flex-shrink-0">
             <DrawerTitle className="text-lg font-semibold text-center">
               {viewMode === 'search' ? 'Lägg till produkt' : 'Lägg till manuellt'}
