@@ -9,7 +9,7 @@ import type { Product } from '@/types';
 import { Wine, ArrowDown, Sparkles, Info } from 'lucide-react';
 
 export function ComparisonList() {
-  const { comparisonList, isLoaded } = useClimate();
+  const { comparisonList, getSortedProducts, isLoaded } = useClimate();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   if (!isLoaded) {
@@ -49,12 +49,8 @@ export function ComparisonList() {
     );
   }
 
-  // Sort by score (best first)
-  const sortedList = [...comparisonList].sort((a, b) => {
-    const scoreA = a.id; // Will be recalculated in ProductCard
-    const scoreB = b.id;
-    return scoreB.localeCompare(scoreA);
-  });
+  // Get sorted products from context
+  const sortedList = getSortedProducts();
 
   return (
     <>

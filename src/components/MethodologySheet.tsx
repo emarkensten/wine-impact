@@ -25,6 +25,7 @@ import {
   Calculator,
   X,
   HelpCircle,
+  Trash2,
 } from 'lucide-react';
 
 const PACKAGING_CONFIG: { key: PackagingType; label: string; icon: React.ReactNode }[] = [
@@ -53,7 +54,7 @@ interface MethodologySheetProps {
 }
 
 export function MethodologySheet({ trigger }: MethodologySheetProps) {
-  const { settings, updateSettings, resetSettings } = useClimate();
+  const { settings, updateSettings, resetSettings, comparisonList, clearList } = useClimate();
 
   const handlePackagingChange = (key: PackagingType, value: number[]) => {
     updateSettings({
@@ -234,6 +235,19 @@ export function MethodologySheet({ trigger }: MethodologySheetProps) {
               <RotateCcw className="w-4 h-4 mr-2" />
               Återställ standardvärden
             </Button>
+
+            {/* Clear List Button */}
+            {comparisonList.length > 0 && (
+              <Button
+                variant="outline"
+                className="w-full h-12 rounded-xl border-destructive/30 text-destructive
+                  hover:bg-destructive/10 mt-3"
+                onClick={clearList}
+              >
+                <Trash2 className="w-4 h-4 mr-2" />
+                Töm hela listan ({comparisonList.length} produkter)
+              </Button>
+            )}
           </div>
         </div>
       </DrawerContent>

@@ -5,16 +5,12 @@ import { ComparisonList } from '@/components/ComparisonList';
 import { FloatingToolbar } from '@/components/FloatingToolbar';
 import { SearchDrawer } from '@/components/SearchDrawer';
 import { ManualDrawer } from '@/components/ManualDrawer';
-import { BarcodeScanner } from '@/components/BarcodeScanner';
 import { MethodologySheet } from '@/components/MethodologySheet';
-import { useClimate } from '@/context/ClimateContext';
-import { Leaf, Trash2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { SortButton } from '@/components/SortButton';
+import { Leaf } from 'lucide-react';
 
 export default function Home() {
-  const { comparisonList, clearList } = useClimate();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [isScannerOpen, setIsScannerOpen] = useState(false);
   const [isManualOpen, setIsManualOpen] = useState(false);
 
   return (
@@ -37,16 +33,7 @@ export default function Home() {
           </div>
 
           <div className="flex items-center gap-1">
-            {comparisonList.length > 0 && (
-              <Button
-                variant="ghost"
-                size="icon"
-                className="rounded-full hover:bg-destructive/10 hover:text-destructive"
-                onClick={clearList}
-              >
-                <Trash2 className="w-4 h-4" />
-              </Button>
-            )}
+            <SortButton />
             <MethodologySheet />
           </div>
         </div>
@@ -60,14 +47,13 @@ export default function Home() {
       {/* Floating Toolbar */}
       <FloatingToolbar
         onSearchClick={() => setIsSearchOpen(true)}
-        onScanClick={() => setIsScannerOpen(true)}
+        onScanClick={() => {}} // TEMPORÄRT DOLD
         onManualClick={() => setIsManualOpen(true)}
       />
 
       {/* Drawers */}
       <SearchDrawer isOpen={isSearchOpen} onOpenChange={setIsSearchOpen} />
       <ManualDrawer isOpen={isManualOpen} onOpenChange={setIsManualOpen} />
-      <BarcodeScanner isOpen={isScannerOpen} onClose={() => setIsScannerOpen(false)} />
     </main>
   );
 }

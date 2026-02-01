@@ -36,6 +36,8 @@ export interface ClimateSettings {
 
 export type ScoreBadge = 'green' | 'yellow' | 'red';
 
+export type SortOption = 'added' | 'best_score' | 'worst_score';
+
 export interface ProductWithScore extends Product {
   climateScore: number;
   badge: ScoreBadge;

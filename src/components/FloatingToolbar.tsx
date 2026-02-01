@@ -1,6 +1,6 @@
 'use client';
 
-import { Search, ScanBarcode, Plus } from 'lucide-react';
+import { Search, ScanBarcode, PenLine } from 'lucide-react';
 
 interface FloatingToolbarProps {
   onSearchClick: () => void;
@@ -27,36 +27,27 @@ export function FloatingToolbar({
           dark:shadow-[0_8px_32px_rgba(0,0,0,0.4)]
         "
       >
-        {/* Search button */}
+        {/* Search button - primary */}
         <button
           onClick={onSearchClick}
           className="
             group flex-1 flex items-center justify-center gap-2
             min-h-[56px] px-4 rounded-xl
-            bg-eco-green/10 hover:bg-eco-green
+            bg-gradient-to-b from-eco-green to-eco-forest
+            shadow-[0_4px_16px_rgba(74,124,89,0.3)]
+            hover:shadow-[0_6px_20px_rgba(74,124,89,0.4)]
             transition-all duration-200 ease-out
             active:scale-[0.98]
           "
           aria-label="Sök produkt"
         >
-          <Search
-            className="
-              w-5 h-5 text-eco-green group-hover:text-white
-              transition-colors duration-200 flex-shrink-0
-            "
-          />
-          <span
-            className="
-              text-sm font-medium
-              text-eco-green group-hover:text-white
-              transition-colors duration-200
-            "
-          >
+          <Search className="w-5 h-5 text-white flex-shrink-0" />
+          <span className="text-sm font-medium text-white">
             Sök
           </span>
         </button>
 
-        {/* Scan button - primary */}
+        {/* TEMPORÄRT DOLD - aktivera när API fungerar
         <button
           onClick={onScanClick}
           className="
@@ -75,6 +66,7 @@ export function FloatingToolbar({
             Skanna
           </span>
         </button>
+        */}
 
         {/* Manual button */}
         <button
@@ -82,13 +74,14 @@ export function FloatingToolbar({
           className="
             group flex-1 flex items-center justify-center gap-2
             min-h-[56px] px-4 rounded-xl
-            bg-eco-amber/10 hover:bg-eco-amber
+            bg-eco-amber/20 hover:bg-eco-amber
+            border border-eco-amber/30
             transition-all duration-200 ease-out
             active:scale-[0.98]
           "
           aria-label="Lägg till manuellt"
         >
-          <Plus
+          <PenLine
             className="
               w-5 h-5 text-eco-amber group-hover:text-white
               transition-colors duration-200 flex-shrink-0

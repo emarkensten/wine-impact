@@ -163,35 +163,34 @@ export function ProductCard({ product, index, onSelect }: ProductCardProps) {
 
             {/* Score Section */}
             <div className="mt-3">
-              <div className="flex items-center justify-between mb-1.5">
-                <div className="flex items-center gap-2">
-                  <Badge
-                    variant="outline"
-                    className={`${config.bg} ${config.border} ${config.text} text-[10px] font-medium px-2 py-0.5`}
-                  >
-                    {badge === 'green' && <Sparkles className="w-2.5 h-2.5 mr-1" />}
-                    {config.label}
-                  </Badge>
-                </div>
-                <div className="flex items-center gap-1">
-                  <span className={`text-sm font-bold ${config.text}`}>
-                    {climateScore}
-                  </span>
-                  <ChevronRight className="w-4 h-4 text-muted-foreground/50" />
+              <div className="flex items-center justify-between mb-2">
+                {/* Badge - mindre för att klimatcirkeln ska poppa */}
+                <Badge
+                  variant="outline"
+                  className={`${config.bg} ${config.border} ${config.text} text-[9px] font-medium px-1.5 py-0`}
+                >
+                  {badge === 'green' && <Sparkles className="w-2 h-2 mr-0.5" />}
+                  {config.label}
+                </Badge>
+
+                {/* Stoppljuscirkel med klimatvärde */}
+                <div className="flex items-center gap-1.5">
+                  <div className={`
+                    w-9 h-9 rounded-full flex items-center justify-center
+                    ${config.fill} shadow-md
+                  `}>
+                    <span className="text-sm font-bold text-white">{climateScore}</span>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-muted-foreground/40" />
                 </div>
               </div>
 
-              {/* Gradient Score Bar */}
-              <div className="relative h-2 rounded-full overflow-hidden bg-gradient-to-r from-score-red via-score-yellow to-score-green">
-                {/* Position marker */}
+              {/* Fylld progress-bar (tjockare) */}
+              <div className="relative h-2.5 rounded-full overflow-hidden bg-muted/40">
                 <div
-                  className="absolute top-0 h-full w-1 bg-white shadow-sm rounded-full transition-all duration-500 animate-score-fill"
-                  style={{ left: `calc(${climateScore}% - 2px)` }}
-                />
-                {/* Darker overlay for unfilled portion */}
-                <div
-                  className="absolute top-0 right-0 h-full bg-black/20 transition-all duration-500"
-                  style={{ width: `${100 - climateScore}%` }}
+                  className={`absolute top-0 left-0 h-full rounded-full ${config.fill}
+                    transition-all duration-700 ease-out animate-score-fill`}
+                  style={{ width: `${climateScore}%` }}
                 />
               </div>
             </div>

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useCallback, useMemo } from 'react';
-import type { ClimateSettings, Product, ProductWithScore } from '@/types';
+import type { ClimateSettings, Product, ProductWithScore, SortOption } from '@/types';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import {
   DEFAULT_CLIMATE_SETTINGS,
@@ -18,6 +18,9 @@ interface ClimateContextType {
   removeProduct: (productId: string) => void;
   clearList: () => void;
   getProductWithScore: (product: Product) => ProductWithScore;
+  getSortedProducts: () => ProductWithScore[];
+  sortOption: SortOption;
+  setSortOption: (option: SortOption) => void;
   isLoaded: boolean;
 }
 
@@ -34,7 +37,12 @@ export function ClimateProvider({ children }: { children: React.ReactNode }) {
     []
   );
 
-  const isLoaded = settingsLoaded && listLoaded;
+  const [sortOption, setSortOption, sortLoaded] = useLocalStorage<SortOption>(
+    'vinkollen-sort',
+    'added'
+  );
+
+  const isLoaded = settingsLoaded && listLoaded && sortLoaded;
 
   const updateSettings = useCallback(
     (updates: Partial<ClimateSettings>) => {
@@ -95,6 +103,18 @@ export function ClimateProvider({ children }: { children: React.ReactNode }) {
     [settings]
   );
 
+  const getSortedProducts = useCallback(() => {
+    const withScores = comparisonList.map((p) => getProductWithScore(p));
+    switch (sortOption) {
+      case 'best_score':
+        return [...withScores].sort((a, b) => b.climateScore - a.climateScore);
+      case 'worst_score':
+        return [...withScores].sort((a, b) => a.climateScore - b.climateScore);
+      default:
+        return withScores; // senast tillagd (original ordning)
+    }
+  }, [comparisonList, sortOption, getProductWithScore]);
+
   const value = useMemo(
     () => ({
       settings,
@@ -105,6 +125,9 @@ export function ClimateProvider({ children }: { children: React.ReactNode }) {
       removeProduct,
       clearList,
       getProductWithScore,
+      getSortedProducts,
+      sortOption,
+      setSortOption,
       isLoaded,
     }),
     [
@@ -116,6 +139,9 @@ export function ClimateProvider({ children }: { children: React.ReactNode }) {
       removeProduct,
       clearList,
       getProductWithScore,
+      getSortedProducts,
+      sortOption,
+      setSortOption,
       isLoaded,
     ]
   );
