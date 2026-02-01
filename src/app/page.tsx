@@ -1,7 +1,11 @@
 'use client';
 
+import { useState } from 'react';
 import { ComparisonList } from '@/components/ComparisonList';
-import { SearchSheet } from '@/components/SearchSheet';
+import { FloatingToolbar } from '@/components/FloatingToolbar';
+import { SearchDrawer } from '@/components/SearchDrawer';
+import { ManualDrawer } from '@/components/ManualDrawer';
+import { BarcodeScanner } from '@/components/BarcodeScanner';
 import { MethodologySheet } from '@/components/MethodologySheet';
 import { useClimate } from '@/context/ClimateContext';
 import { Leaf, Trash2 } from 'lucide-react';
@@ -9,6 +13,9 @@ import { Button } from '@/components/ui/button';
 
 export default function Home() {
   const { comparisonList, clearList } = useClimate();
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isScannerOpen, setIsScannerOpen] = useState(false);
+  const [isManualOpen, setIsManualOpen] = useState(false);
 
   return (
     <main className="min-h-dvh flex flex-col bg-background texture-grain">
@@ -46,12 +53,21 @@ export default function Home() {
       </header>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col pt-4 pb-24">
+      <div className="flex-1 flex flex-col pt-4 pb-32">
         <ComparisonList />
       </div>
 
-      {/* Search Sheet */}
-      <SearchSheet />
+      {/* Floating Toolbar */}
+      <FloatingToolbar
+        onSearchClick={() => setIsSearchOpen(true)}
+        onScanClick={() => setIsScannerOpen(true)}
+        onManualClick={() => setIsManualOpen(true)}
+      />
+
+      {/* Drawers */}
+      <SearchDrawer isOpen={isSearchOpen} onOpenChange={setIsSearchOpen} />
+      <ManualDrawer isOpen={isManualOpen} onOpenChange={setIsManualOpen} />
+      <BarcodeScanner isOpen={isScannerOpen} onClose={() => setIsScannerOpen(false)} />
     </main>
   );
 }
