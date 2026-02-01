@@ -56,11 +56,11 @@ export function SearchSheet() {
             </DrawerTitle>
           </DrawerHeader>
 
-          <div className="px-4 pb-8 flex-1 min-h-0 overflow-y-auto">
+          <div className="px-4 flex-1 min-h-0 overflow-y-auto">
             {viewMode === 'search' ? (
               <>
-                {/* Action Buttons */}
-                <div className="flex gap-2 mb-4 flex-shrink-0">
+                {/* Action Buttons - sticky */}
+                <div className="flex gap-2 mb-4 sticky top-0 bg-background pt-1 pb-2 -mt-1 z-10">
                   <Button
                     variant="outline"
                     className="flex-1 h-12 rounded-xl border-eco-green/30 text-eco-green hover:bg-eco-green/10"

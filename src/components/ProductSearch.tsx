@@ -91,8 +91,8 @@ export function ProductSearch({ onProductSelect }: ProductSearchProps) {
 
   return (
     <div className="space-y-3">
-      {/* Search Input */}
-      <div className="relative">
+      {/* Search Input - sticky to stay visible with iOS keyboard */}
+      <div className="relative sticky top-14 bg-background pb-2 z-10">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
         <Input
           type="text"
