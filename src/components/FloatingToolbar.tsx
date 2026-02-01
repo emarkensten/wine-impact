@@ -14,11 +14,11 @@ export function FloatingToolbar({
   onManualClick,
 }: FloatingToolbarProps) {
   return (
-    <div className="fixed bottom-0 left-0 right-0 flex justify-center pb-8 pt-4 pointer-events-none z-50">
+    <div className="fixed bottom-0 left-0 right-0 px-4 pb-6 pt-4 pointer-events-none z-50">
       <div
         className="
           pointer-events-auto
-          flex items-center gap-1 p-1.5
+          flex items-center gap-3 p-2.5
           rounded-2xl
           bg-white/70 dark:bg-black/40
           backdrop-blur-xl
@@ -31,24 +31,24 @@ export function FloatingToolbar({
         <button
           onClick={onSearchClick}
           className="
-            group relative flex flex-col items-center justify-center
-            w-16 h-16 rounded-xl
+            group flex-1 flex items-center justify-center gap-2
+            min-h-[56px] px-4 rounded-xl
             bg-eco-green/10 hover:bg-eco-green
             transition-all duration-200 ease-out
-            active:scale-95
+            active:scale-[0.98]
           "
           aria-label="Sök produkt"
         >
           <Search
             className="
-              w-6 h-6 text-eco-green group-hover:text-white
-              transition-colors duration-200
+              w-5 h-5 text-eco-green group-hover:text-white
+              transition-colors duration-200 flex-shrink-0
             "
           />
           <span
             className="
-              text-[10px] font-medium mt-0.5
-              text-eco-green/80 group-hover:text-white/90
+              text-sm font-medium
+              text-eco-green group-hover:text-white
               transition-colors duration-200
             "
           >
@@ -56,23 +56,22 @@ export function FloatingToolbar({
           </span>
         </button>
 
-        {/* Scan button - primary/larger */}
+        {/* Scan button - primary */}
         <button
           onClick={onScanClick}
           className="
-            group relative flex flex-col items-center justify-center
-            w-[72px] h-[72px] -my-1 rounded-2xl
+            group flex-1 flex items-center justify-center gap-2
+            min-h-[56px] px-4 rounded-xl
             bg-gradient-to-b from-eco-green to-eco-forest
-            shadow-[0_4px_16px_rgba(74,124,89,0.4)]
-            hover:shadow-[0_6px_20px_rgba(74,124,89,0.5)]
-            hover:scale-105
+            shadow-[0_4px_16px_rgba(74,124,89,0.3)]
+            hover:shadow-[0_6px_20px_rgba(74,124,89,0.4)]
             transition-all duration-200 ease-out
-            active:scale-95
+            active:scale-[0.98]
           "
           aria-label="Skanna streckkod"
         >
-          <ScanBarcode className="w-7 h-7 text-white" />
-          <span className="text-[10px] font-medium mt-0.5 text-white/90">
+          <ScanBarcode className="w-5 h-5 text-white flex-shrink-0" />
+          <span className="text-sm font-medium text-white">
             Skanna
           </span>
         </button>
@@ -81,24 +80,24 @@ export function FloatingToolbar({
         <button
           onClick={onManualClick}
           className="
-            group relative flex flex-col items-center justify-center
-            w-16 h-16 rounded-xl
+            group flex-1 flex items-center justify-center gap-2
+            min-h-[56px] px-4 rounded-xl
             bg-eco-amber/10 hover:bg-eco-amber
             transition-all duration-200 ease-out
-            active:scale-95
+            active:scale-[0.98]
           "
           aria-label="Lägg till manuellt"
         >
           <Plus
             className="
-              w-6 h-6 text-eco-amber group-hover:text-white
-              transition-colors duration-200
+              w-5 h-5 text-eco-amber group-hover:text-white
+              transition-colors duration-200 flex-shrink-0
             "
           />
           <span
             className="
-              text-[10px] font-medium mt-0.5
-              text-eco-amber/80 group-hover:text-white/90
+              text-sm font-medium
+              text-eco-amber group-hover:text-white
               transition-colors duration-200
             "
           >
