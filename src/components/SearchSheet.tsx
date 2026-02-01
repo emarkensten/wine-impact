@@ -21,10 +21,13 @@ import {
 
 type ViewMode = 'search' | 'manual';
 
+const SNAP_POINTS: (number | string)[] = [0.5, 1];
+
 export function SearchSheet() {
   const [isOpen, setIsOpen] = useState(false);
   const [isScannerOpen, setIsScannerOpen] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>('search');
+  const [snapPoint, setSnapPoint] = useState<number | string | null>(SNAP_POINTS[0]);
 
   const handleProductSelect = () => {
     setIsOpen(false);
@@ -34,9 +37,22 @@ export function SearchSheet() {
     setViewMode('search');
   };
 
+  const handleOpenChange = (open: boolean) => {
+    setIsOpen(open);
+    if (open) {
+      setSnapPoint(SNAP_POINTS[0]); // Reset to initial snap point when opening
+    }
+  };
+
   return (
     <>
-      <Drawer open={isOpen} onOpenChange={setIsOpen}>
+      <Drawer
+        open={isOpen}
+        onOpenChange={handleOpenChange}
+        snapPoints={SNAP_POINTS}
+        activeSnapPoint={snapPoint}
+        setActiveSnapPoint={setSnapPoint}
+      >
         <DrawerTrigger asChild>
           <div className="fixed bottom-0 left-0 right-0 px-4 pb-6 pt-2 bg-gradient-to-t from-background via-background to-transparent">
             <Button
@@ -56,7 +72,7 @@ export function SearchSheet() {
             </DrawerTitle>
           </DrawerHeader>
 
-          <div className="px-4 pb-8 flex-1 overflow-y-auto min-h-0">
+          <div className={`px-4 pb-8 flex-1 min-h-0 ${snapPoint === 1 ? 'overflow-y-auto' : 'overflow-hidden'}`}>
             {viewMode === 'search' ? (
               <>
                 {/* Action Buttons */}
