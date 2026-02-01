@@ -27,7 +27,7 @@ export function SearchSheet() {
   const [viewMode, setViewMode] = useState<ViewMode>('search');
 
   const handleProductSelect = () => {
-    // Keep sheet open to allow adding more products
+    setIsOpen(false);
   };
 
   const handleManualAdd = () => {
@@ -80,7 +80,7 @@ export function SearchSheet() {
                 </div>
 
                 {/* Search Component */}
-                <ProductSearch onProductSelect={handleProductSelect} />
+                <ProductSearch onProductSelect={handleProductSelect} autoFocus={isOpen} />
               </>
             ) : (
               <>

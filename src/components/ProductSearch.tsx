@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Input } from '@/components/ui/input';
 import { useProductSearch } from '@/hooks/useProductSearch';
 import { useClimate } from '@/context/ClimateContext';
@@ -20,14 +20,27 @@ import { getCacheStatus, type CacheStatus } from '@/lib/api';
 
 interface ProductSearchProps {
   onProductSelect?: () => void;
+  autoFocus?: boolean;
 }
 
-export function ProductSearch({ onProductSelect }: ProductSearchProps) {
+export function ProductSearch({ onProductSelect, autoFocus }: ProductSearchProps) {
   const { query, setQuery, results, isLoading, error, clearSearch } =
     useProductSearch();
   const { addProduct, comparisonList } = useClimate();
   const [cacheStatus, setCacheStatus] = useState<CacheStatus | null>(null);
   const [isInitializing, setIsInitializing] = useState(true);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Auto-focus input when sheet opens
+  useEffect(() => {
+    if (autoFocus && !isInitializing) {
+      // Small delay to ensure drawer animation is complete
+      const timer = setTimeout(() => {
+        inputRef.current?.focus();
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [autoFocus, isInitializing]);
 
   // Check cache status on mount
   useEffect(() => {
@@ -95,6 +108,7 @@ export function ProductSearch({ onProductSelect }: ProductSearchProps) {
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
         <Input
+          ref={inputRef}
           type="text"
           placeholder="Sök produkt..."
           value={query}
