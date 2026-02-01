@@ -80,7 +80,7 @@ export function SearchSheet() {
                 </div>
 
                 {/* Search Component */}
-                <ProductSearch onProductSelect={handleProductSelect} autoFocus={isOpen} />
+                <ProductSearch onProductSelect={handleProductSelect} />
               </>
             ) : (
               <>
