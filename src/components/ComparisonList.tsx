@@ -4,8 +4,9 @@ import { useState } from 'react';
 import { useClimate } from '@/context/ClimateContext';
 import { ProductCard } from './ProductCard';
 import { ProductDetailSheet } from './ProductDetailSheet';
+import { MethodologySheet } from './MethodologySheet';
 import type { Product } from '@/types';
-import { Wine, ArrowDown, Sparkles } from 'lucide-react';
+import { Wine, ArrowDown, Sparkles, Info } from 'lucide-react';
 
 export function ComparisonList() {
   const { comparisonList, isLoaded } = useClimate();
@@ -32,10 +33,18 @@ export function ComparisonList() {
           Sök efter en produkt eller skanna en streckkod för att börja jämföra
           klimatpåverkan
         </p>
-        <div className="flex items-center gap-2 text-eco-green animate-bounce">
+        <div className="flex items-center gap-2 text-eco-green animate-bounce mb-8">
           <ArrowDown className="w-4 h-4" />
           <span className="text-sm font-medium">Börja söka nedan</span>
         </div>
+        <MethodologySheet
+          trigger={
+            <button className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
+              <Info className="w-3 h-3" />
+              Hur räknar vi?
+            </button>
+          }
+        />
       </div>
     );
   }
@@ -71,6 +80,18 @@ export function ComparisonList() {
               onSelect={setSelectedProduct}
             />
           ))}
+        </div>
+
+        {/* Methodology link */}
+        <div className="flex justify-center mt-6">
+          <MethodologySheet
+            trigger={
+              <button className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
+                <Info className="w-3 h-3" />
+                Hur räknar vi?
+              </button>
+            }
+          />
         </div>
       </div>
 

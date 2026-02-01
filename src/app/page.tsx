@@ -4,7 +4,7 @@ import { ComparisonList } from '@/components/ComparisonList';
 import { SearchSheet } from '@/components/SearchSheet';
 import { MethodologySheet } from '@/components/MethodologySheet';
 import { useClimate } from '@/context/ClimateContext';
-import { Leaf, Trash2, Info } from 'lucide-react';
+import { Leaf, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export default function Home() {
@@ -48,18 +48,6 @@ export default function Home() {
       {/* Main Content */}
       <div className="flex-1 flex flex-col pt-4 pb-24">
         <ComparisonList />
-      </div>
-
-      {/* "How we calculate" link */}
-      <div className="fixed bottom-20 left-0 right-0 flex justify-center pb-2 pointer-events-none">
-        <MethodologySheet
-          trigger={
-            <button className="pointer-events-auto flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors bg-background/80 backdrop-blur-sm px-3 py-1.5 rounded-full border border-border/50">
-              <Info className="w-3 h-3" />
-              Hur räknar vi?
-            </button>
-          }
-        />
       </div>
 
       {/* Search Sheet */}
