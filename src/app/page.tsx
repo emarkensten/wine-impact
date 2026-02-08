@@ -14,7 +14,7 @@ export default function Home() {
   const [isManualOpen, setIsManualOpen] = useState(false);
 
   return (
-    <main className="min-h-dvh flex flex-col bg-background texture-grain">
+    <main className="min-h-dvh flex flex-col bg-background texture-grain max-w-6xl mx-auto w-full">
       {/* Header */}
       <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-lg border-b border-border/50">
         <div className="flex items-center justify-between px-4 h-16">

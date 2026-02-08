@@ -23,10 +23,11 @@ import {
 interface ProductCardProps {
   product: Product;
   index: number;
+  isSelected?: boolean;
   onSelect: (product: Product) => void;
 }
 
-export function ProductCard({ product, index, onSelect }: ProductCardProps) {
+export function ProductCard({ product, index, isSelected, onSelect }: ProductCardProps) {
   const { getProductWithScore, removeProduct } = useClimate();
   const [isRemoving, setIsRemoving] = useState(false);
   const [touchStart, setTouchStart] = useState<number | null>(null);
@@ -110,7 +111,11 @@ export function ProductCard({ product, index, onSelect }: ProductCardProps) {
       </div>
 
       <Card
-        className="overflow-hidden border-0 shadow-sm bg-card/80 backdrop-blur-sm animate-slide-up cursor-pointer active:scale-[0.98] transition-transform"
+        className={`overflow-hidden shadow-sm bg-card/80 backdrop-blur-sm animate-slide-up cursor-pointer active:scale-[0.98] transition-all ${
+          isSelected
+            ? 'border-2 border-eco-green ring-1 ring-eco-green/20'
+            : 'border-0'
+        }`}
         style={{
           transform: `translateX(-${swipeOffset}px)`,
           animationDelay: `${index * 80}ms`,
