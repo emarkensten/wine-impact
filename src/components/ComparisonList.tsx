@@ -7,7 +7,7 @@ import { ProductDetailSheet } from './ProductDetailSheet';
 import { ProductDetailPanel } from './ProductDetailPanel';
 import { MethodologySheet } from './MethodologySheet';
 import type { Product } from '@/types';
-import { Wine, ArrowDown, Sparkles, Info, BarChart3 } from 'lucide-react';
+import { Wine, Sparkles, Info, BarChart3 } from 'lucide-react';
 
 function useIsDesktop() {
   const [isDesktop, setIsDesktop] = useState(false);
@@ -67,10 +67,6 @@ export function ComparisonList() {
           Sök efter en produkt eller skanna en streckkod för att börja jämföra
           klimatpåverkan
         </p>
-        <div className="flex items-center gap-2 text-eco-green animate-bounce mb-8">
-          <ArrowDown className="w-4 h-4" />
-          <span className="text-sm font-medium">Börja söka nedan</span>
-        </div>
         <MethodologySheet
           trigger={
             <button className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
