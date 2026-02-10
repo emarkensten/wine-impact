@@ -7,7 +7,7 @@ import { SearchDrawer } from '@/components/SearchDrawer';
 import { ManualDrawer } from '@/components/ManualDrawer';
 import { MethodologySheet } from '@/components/MethodologySheet';
 import { SortButton } from '@/components/SortButton';
-import { Leaf } from 'lucide-react';
+import { Leaf, Search, PenLine } from 'lucide-react';
 
 export default function Home() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -33,6 +33,21 @@ export default function Home() {
           </div>
 
           <div className="flex items-center gap-1">
+            {/* Desktop: action buttons in header */}
+            <button
+              onClick={() => setIsSearchOpen(true)}
+              className="hidden md:flex items-center gap-1.5 h-9 px-3 rounded-lg bg-eco-green text-white text-sm font-medium hover:bg-eco-forest transition-colors"
+            >
+              <Search className="w-4 h-4" />
+              Sök
+            </button>
+            <button
+              onClick={() => setIsManualOpen(true)}
+              className="hidden md:flex items-center gap-1.5 h-9 px-3 rounded-lg border border-eco-amber/40 text-eco-amber text-sm font-medium hover:bg-eco-amber/10 transition-colors"
+            >
+              <PenLine className="w-4 h-4" />
+              Manuell
+            </button>
             <SortButton />
             <MethodologySheet />
           </div>
@@ -40,16 +55,18 @@ export default function Home() {
       </header>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col pt-4 pb-32">
+      <div className="flex-1 flex flex-col pt-4 pb-32 md:pb-4">
         <ComparisonList />
       </div>
 
-      {/* Floating Toolbar */}
-      <FloatingToolbar
-        onSearchClick={() => setIsSearchOpen(true)}
-        onScanClick={() => {}} // TEMPORÄRT DOLD
-        onManualClick={() => setIsManualOpen(true)}
-      />
+      {/* Floating Toolbar - mobile only */}
+      <div className="md:hidden">
+        <FloatingToolbar
+          onSearchClick={() => setIsSearchOpen(true)}
+          onScanClick={() => {}} // TEMPORÄRT DOLD
+          onManualClick={() => setIsManualOpen(true)}
+        />
+      </div>
 
       {/* Drawers */}
       <SearchDrawer isOpen={isSearchOpen} onOpenChange={setIsSearchOpen} />

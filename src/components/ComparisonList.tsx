@@ -149,14 +149,14 @@ export function ComparisonList() {
         </div>
       </div>
 
-      {/* Mobile: Drawer for detail view */}
-      <div className="md:hidden">
+      {/* Mobile only: Drawer for detail view (portal ignores CSS display) */}
+      {!isDesktop && (
         <ProductDetailSheet
           product={selectedProduct}
           isOpen={!!selectedProduct}
           onClose={() => setSelectedProduct(null)}
         />
-      </div>
+      )}
     </>
   );
 }
