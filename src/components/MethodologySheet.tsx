@@ -35,9 +35,8 @@ const PACKAGING_CONFIG: { key: PackagingType; label: string; icon: React.ReactNo
 ];
 
 const TRANSPORT_CONFIG: { key: TransportMethod; label: string }[] = [
-  { key: 'road', label: 'Vägtransport' },
-  { key: 'sea', label: 'Sjöfart' },
-  { key: 'air', label: 'Flyg' },
+  { key: 'road', label: 'Vägtransport (lastbil)' },
+  { key: 'sea', label: 'Sjöfart (fartyg)' },
 ];
 
 const PRODUCTION_CONFIG: { key: ProductionMethod; label: string }[] = [
@@ -126,12 +125,20 @@ export function MethodologySheet({ trigger }: MethodologySheetProps) {
                     </li>
                     <li className="flex items-start gap-2">
                       <Leaf className="w-3.5 h-3.5 mt-0.5 text-eco-green" />
-                      <span><strong>Produktion</strong> - Ekologisk odling ger lägre klimatpåverkan</span>
+                      <span><strong>Produktion</strong> - Odling och vinframställning, skalar med volym</span>
                     </li>
                   </ul>
                   <p className="text-xs text-muted-foreground pt-2 border-t border-eco-sage/20 mt-3">
-                    Värden baseras på branschstandarder och Systembolagets klimatdata.
-                    Du kan justera beräkningarna nedan.
+                    Värdena bygger på Systembolagets förpackningsdata och DEFRA:s
+                    transportfaktorer (ton-km). En typisk 750 ml-flaska hamnar runt
+                    1,2 kg CO₂e, där glaset står för 30–50 %. Poängen räknas{' '}
+                    <strong>per liter</strong> så att t.ex. bag-in-box och flaska kan
+                    jämföras rättvist.
+                  </p>
+                  <p className="text-xs text-muted-foreground pt-2">
+                    Obs: forskningen om ekologisk/biodynamisk odling är blandad – en
+                    del studier visar ingen tydlig klimatskillnad. Därför är den
+                    effekten liten här. Du kan justera alla värden nedan.
                   </p>
                 </div>
               </div>
@@ -172,7 +179,7 @@ export function MethodologySheet({ trigger }: MethodologySheetProps) {
             <section>
               <h3 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
                 <Truck className="w-4 h-4 text-eco-green" />
-                Transport (kg CO₂e/km/l)
+                Transport (kg CO₂e/tonkm)
               </h3>
               <div className="space-y-5">
                 {TRANSPORT_CONFIG.map(({ key, label }) => (
@@ -187,8 +194,8 @@ export function MethodologySheet({ trigger }: MethodologySheetProps) {
                       value={[settings.transport[key]]}
                       onValueChange={(value) => handleTransportChange(key, value)}
                       min={0}
-                      max={key === 'air' ? 1 : 0.2}
-                      step={key === 'air' ? 0.05 : 0.005}
+                      max={0.15}
+                      step={0.002}
                       className="[&_[role=slider]]:bg-eco-green [&_[role=slider]]:border-eco-green [&_.bg-primary]:bg-eco-green"
                     />
                   </div>

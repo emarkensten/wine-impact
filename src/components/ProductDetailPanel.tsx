@@ -10,7 +10,8 @@ import {
   getProductionMethodLabel,
   getTransportMode,
   getTransportModeLabel,
-  BASE_PRODUCTION_CO2E,
+  calculateImpact,
+  type ImpactBreakdown,
 } from '@/lib/climate-calculator';
 import {
   Package,
@@ -24,43 +25,6 @@ import {
   TrendingUp,
   Minus,
 } from 'lucide-react';
-
-interface ImpactBreakdown {
-  packaging: number;
-  transport: number;
-  production: number;
-  total: number;
-  score: number;
-}
-
-function calculateBreakdown(
-  product: Product,
-  settings: ReturnType<typeof useClimate>['settings']
-): ImpactBreakdown {
-  const packagingImpact = settings.packaging[product.packagingType] || 0.5;
-
-  const distance = getDistanceFromSweden(product.originCountry);
-  const transportMode = getTransportMode(distance);
-  const transportRate = settings.transport[transportMode];
-  const volumeLiters = product.volumeMl / 1000;
-  const transportImpact = (distance * transportRate * volumeLiters) / 1000;
-
-  const productionMultiplier = settings.production[product.productionMethod] || 1;
-  const productionImpact = BASE_PRODUCTION_CO2E * productionMultiplier;
-
-  const total = packagingImpact + transportImpact + productionImpact;
-
-  const maxCO2e = 2.5;
-  const score = Math.max(0, Math.min(100, Math.round((1 - total / maxCO2e) * 100)));
-
-  return {
-    packaging: packagingImpact,
-    transport: transportImpact,
-    production: productionImpact,
-    total,
-    score,
-  };
-}
 
 function ImpactRing({
   breakdown,
@@ -221,7 +185,7 @@ interface ProductDetailPanelProps {
 export function ProductDetailPanel({ product, onRemove }: ProductDetailPanelProps) {
   const { settings } = useClimate();
 
-  const breakdown = calculateBreakdown(product, settings);
+  const breakdown: ImpactBreakdown = calculateImpact(product, settings);
   const distance = getDistanceFromSweden(product.originCountry);
   const transportMode = getTransportMode(distance);
   const transportModeLabel = getTransportModeLabel(transportMode);
@@ -331,7 +295,7 @@ export function ProductDetailPanel({ product, onRemove }: ProductDetailPanelProp
           color="#4A7C59"
           description={`${getProductionMethodLabel(product.productionMethod)} odling${
             product.productionMethod !== 'conventional'
-              ? ' ger lägre utsläpp'
+              ? ' ger ofta något lägre utsläpp'
               : ''
           }`}
           trend={productionTrend}
@@ -354,7 +318,8 @@ export function ProductDetailPanel({ product, onRemove }: ProductDetailPanelProp
           </div>
         </div>
         <p className="text-xs text-muted-foreground mt-2">
-          Beräknat per förpackning. Lägre är bättre.
+          Totalt för förpackningen ({(breakdown.perLiter).toFixed(2)} kg CO₂e/liter).
+          Poängen jämför per liter så olika storlekar kan ställas mot varandra rättvist.
         </p>
       </div>
 

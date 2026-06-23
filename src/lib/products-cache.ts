@@ -84,7 +84,11 @@ export function getCacheStatus(): CacheStatus {
   };
 }
 
-function mapPackaging(packagingLevel1?: string, bottleText?: string): PackagingType {
+function mapPackaging(
+  packagingLevel1?: string,
+  bottleText?: string,
+  isClimateSmartPackaging?: boolean
+): PackagingType {
   const packaging = (packagingLevel1 || bottleText || '').toLowerCase();
 
   if (packaging.includes('box') || packaging.includes('bag-in-box') || packaging.includes('bib')) {
@@ -100,6 +104,10 @@ function mapPackaging(packagingLevel1?: string, bottleText?: string): PackagingT
     return 'tetra';
   }
   if (packaging.includes('lättglas') || packaging.includes('lättvikt')) {
+    return 'glass_light';
+  }
+  // Systembolaget flags lightweighted/climate-smart glass; treat it as light.
+  if (isClimateSmartPackaging) {
     return 'glass_light';
   }
   return 'glass_heavy';
@@ -120,7 +128,11 @@ function mapProduct(item: SystembolagetProduct): CachedProduct {
     imageUrl: item.images?.[0]?.imageUrl
       ? `${item.images[0].imageUrl}_200.webp`
       : '/placeholder-bottle.svg',
-    packagingType: mapPackaging(item.packagingLevel1, item.bottleText),
+    packagingType: mapPackaging(
+      item.packagingLevel1,
+      item.bottleText,
+      item.isClimateSmartPackaging
+    ),
     originCountry,
     productionMethod: item.isOrganic ? 'organic' : 'conventional',
     volumeMl: item.volume || 750,

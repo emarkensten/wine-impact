@@ -27,8 +27,10 @@ interface ClimateContextType {
 const ClimateContext = createContext<ClimateContextType | undefined>(undefined);
 
 export function ClimateProvider({ children }: { children: React.ReactNode }) {
+  // v2: recalibrated against Systembolaget/DEFRA data — new key so existing
+  // users pick up the corrected defaults instead of stale stored values.
   const [settings, setSettings, settingsLoaded] = useLocalStorage<ClimateSettings>(
-    'ekokollen-settings',
+    'vinkollen-settings-v2',
     DEFAULT_CLIMATE_SETTINGS
   );
 

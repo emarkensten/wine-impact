@@ -8,7 +8,7 @@ export type PackagingType =
 
 export type ProductionMethod = 'conventional' | 'organic' | 'biodynamic';
 
-export type TransportMethod = 'sea' | 'road' | 'air';
+export type TransportMethod = 'sea' | 'road';
 
 export interface Product {
   id: string;
@@ -28,10 +28,6 @@ export interface ClimateSettings {
   packaging: Record<PackagingType, number>;
   transport: Record<TransportMethod, number>;
   production: Record<ProductionMethod, number>;
-  thresholds: {
-    green_max: number;
-    yellow_max: number;
-  };
 }
 
 export type ScoreBadge = 'green' | 'yellow' | 'red';

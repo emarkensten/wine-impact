@@ -1,94 +1,116 @@
-import type { Product, ClimateSettings, ScoreBadge } from '@/types';
+import type { PackagingType, Product, ClimateSettings, ScoreBadge } from '@/types';
 import { getDistanceFromSweden } from './distance-calculator';
 
 /**
- * Default climate settings based on industry standards and research.
+ * Climate model, calibrated against published LCA data (June 2026).
  *
  * Sources:
- * - Systembolagets klimatmärkning
- * - Livsmedelsverkets data (2024)
- * - EU Packaging and Packaging Waste Regulation
- * - IVL Svenska Miljöinstitutet
+ * - Systembolaget's sales-weighted packaging table (cradle-to-gate of empty
+ *   container) — directly comparable to this Swedish-retail use case.
+ * - DEFRA 2024 freight emission factors (kg CO₂e per tonne-km).
+ * - Wine LCA review, ScienceDirect 2022 (avg ~1.2 kg CO₂e / 750 ml bottle).
+ * - OIV / IFV 2024 for viticulture + vinification.
  *
- * Packaging values (kg CO₂e per package):
- * - Glass production is energy-intensive; weight is the primary factor
- * - Heavy wine bottle (500-600g): ~0.8 kg CO₂e
- * - Light wine bottle (350-400g): ~0.5 kg CO₂e
- * - Aluminum can: Low per unit, high recyclability factor
- * - PET: Lower production impact but recyclability varies
- * - Bag-in-box: Very efficient per liter of liquid
- * - Tetra Pak: Lowest impact for paper-based packaging
+ * Reference figures for a 750 ml bottle (cradle-to-retail): total ~1.2 kg
+ * CO₂e (range 0.9–1.9), of which glass packaging is ~30–50% and transport
+ * ~15–25%. Organic/biodynamic effects are small and contested in the
+ * literature, so they are modelled as modest modifiers, not headline drivers.
  *
- * Transport values (kg CO₂e per km per liter):
- * - Sea freight: ~0.01 (very efficient for bulk)
- * - Road freight: ~0.05 (typical truck transport)
- * - Air freight: ~0.5 (rarely used for beverages)
- *
- * Production multipliers:
- * - Conventional: 1.0 (baseline)
- * - Organic: 0.85 (reduced chemical inputs, often lower yields)
- * - Biodynamic: 0.75 (additional sustainable practices)
+ * The score is computed per LITRE so different pack sizes (e.g. a 3 L
+ * bag-in-box vs a 750 ml bottle) can be compared fairly; the breakdown is
+ * reported per package for intuition.
  */
-/**
- * Base production CO₂e (vineyard, winery operations) per bottle.
- * This is what the organic/biodynamic multiplier applies to.
- */
-export const BASE_PRODUCTION_CO2E = 0.4; // kg CO₂e per bottle
+
+/** Viticulture + vinification, kg CO₂e per litre (≈0.30 per 750 ml bottle). */
+export const PRODUCTION_CO2E_PER_LITER = 0.4;
+
+/** Empty-container weight (kg), used to weight transport by tonne-km. */
+export const PACKAGING_WEIGHT_KG: Record<PackagingType, number> = {
+  glass_heavy: 0.55,
+  glass_light: 0.4,
+  aluminum_can: 0.015,
+  pet: 0.04,
+  bag_in_box: 0.15,
+  tetra: 0.03,
+};
+
+// Per-litre CO₂e range used to map onto the 0–100 score.
+const BEST_CO2E_PER_LITER = 0.6; // light pack, organic, nearby ≈ excellent
+const WORST_CO2E_PER_LITER = 2.2; // heavy glass, long-haul ≈ poor
 
 export const DEFAULT_CLIMATE_SETTINGS: ClimateSettings = {
   packaging: {
-    glass_heavy: 0.8,    // kg CO₂e - standard 500-600g wine bottle
-    glass_light: 0.5,    // kg CO₂e - lightweight 350-400g bottle
-    aluminum_can: 0.2,   // kg CO₂e - 33-50cl can, high recyclability
-    pet: 0.15,           // kg CO₂e - PET plastic bottle
-    bag_in_box: 0.1,     // kg CO₂e - per liter equivalent, very efficient
-    tetra: 0.08,         // kg CO₂e - Tetra Pak carton, most efficient
+    glass_heavy: 0.5, // kg CO₂e - standard ~550 g wine bottle (Systembolaget)
+    glass_light: 0.4, // kg CO₂e - lightweight ~400 g bottle
+    aluminum_can: 0.06, // kg CO₂e - 33-50 cl can, high recycled content
+    pet: 0.18, // kg CO₂e - PET plastic bottle
+    bag_in_box: 0.2, // kg CO₂e - the full 3 L box (very low per litre)
+    tetra: 0.08, // kg CO₂e - carton, lowest of the common formats
   },
   transport: {
-    sea: 0.01,    // kg CO₂e/km/liter - container ship bulk transport
-    road: 0.05,   // kg CO₂e/km/liter - standard truck transport
-    air: 0.5,     // kg CO₂e/km/liter - air freight (seldom used)
+    sea: 0.012, // kg CO₂e per tonne-km - container ship (DEFRA)
+    road: 0.08, // kg CO₂e per tonne-km - articulated truck (DEFRA)
   },
   production: {
-    conventional: 1.0,   // baseline multiplier
-    organic: 0.85,       // ~15% reduction vs conventional
-    biodynamic: 0.75,    // ~25% reduction vs conventional
-  },
-  thresholds: {
-    green_max: 100,  // Score >= 66 is green
-    yellow_max: 50,  // Score 33-65 is yellow, < 33 is red
+    conventional: 1.0, // baseline multiplier
+    organic: 0.95, // small discount; evidence is mixed (often ~0)
+    biodynamic: 0.9, // thin evidence; modest discount only
   },
 };
+
+export interface ImpactBreakdown {
+  /** kg CO₂e for the whole package. */
+  packaging: number;
+  transport: number;
+  production: number;
+  total: number;
+  /** kg CO₂e per litre — the basis for the score. */
+  perLiter: number;
+  /** 0–100, higher is better. */
+  score: number;
+}
+
+export function calculateImpact(
+  product: Product,
+  settings: ClimateSettings
+): ImpactBreakdown {
+  const volumeLiters = product.volumeMl > 0 ? product.volumeMl / 1000 : 0.75;
+
+  // Packaging: manufacturing of the empty container (independent of volume).
+  const packaging = settings.packaging[product.packagingType] ?? 0.5;
+
+  // Transport: weight (wine + empty container) × distance × tonne-km factor.
+  const distance = getDistanceFromSweden(product.originCountry);
+  const transportRate = settings.transport[getTransportMode(distance)];
+  const weightTonnes =
+    (volumeLiters + (PACKAGING_WEIGHT_KG[product.packagingType] ?? 0.4)) / 1000;
+  const transport = weightTonnes * distance * transportRate;
+
+  // Production: scales with the amount of wine, with a farming-method modifier.
+  const productionMultiplier = settings.production[product.productionMethod] ?? 1;
+  const production = PRODUCTION_CO2E_PER_LITER * volumeLiters * productionMultiplier;
+
+  const total = packaging + transport + production;
+  const perLiter = total / volumeLiters;
+
+  const score = Math.max(
+    0,
+    Math.min(
+      100,
+      Math.round(
+        (1 - (perLiter - BEST_CO2E_PER_LITER) / (WORST_CO2E_PER_LITER - BEST_CO2E_PER_LITER)) * 100
+      )
+    )
+  );
+
+  return { packaging, transport, production, total, perLiter, score };
+}
 
 export function calculateClimateScore(
   product: Product,
   settings: ClimateSettings
 ): number {
-  // Get packaging impact (independent of production method)
-  const packagingImpact = settings.packaging[product.packagingType] || 0.5;
-
-  // Calculate transport impact (independent of production method)
-  const distance = getDistanceFromSweden(product.originCountry);
-  const transportMode = getTransportMode(distance);
-  const transportRate = settings.transport[transportMode];
-
-  // Convert volume to liters
-  const volumeLiters = product.volumeMl / 1000;
-  const transportImpact = distance * transportRate * volumeLiters / 1000; // Normalize
-
-  // Production impact: base value * multiplier for organic/biodynamic
-  const productionMultiplier = settings.production[product.productionMethod] || 1;
-  const productionImpact = BASE_PRODUCTION_CO2E * productionMultiplier;
-
-  // Calculate total CO2e impact (sum of independent factors)
-  const totalCO2e = packagingImpact + transportImpact + productionImpact;
-
-  // Normalize to 0-100 score (lower CO2e = higher score)
-  // Typical range: 0.2 (best) to 2.5 (worst) kg CO2e
-  const maxCO2e = 2.5;
-  const score = Math.max(0, Math.min(100, Math.round((1 - totalCO2e / maxCO2e) * 100)));
-
-  return score;
+  return calculateImpact(product, settings).score;
 }
 
 export function getBadge(score: number): ScoreBadge {
