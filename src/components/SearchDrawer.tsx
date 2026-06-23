@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef, useEffect } from 'react';
+import Image from 'next/image';
 import {
   Drawer,
   DrawerContent,
@@ -17,6 +18,7 @@ import {
   Wine,
   MapPin,
   Plus,
+  Check,
   X,
   Package,
   Database,
@@ -107,22 +109,36 @@ export function SearchDrawer({ isOpen, onOpenChange }: SearchDrawerProps) {
           {/* Search Results */}
           {results.length > 0 && (
             <div className="space-y-2">
-              {results.map((product) => {
+              {results.map((product, index) => {
                 const alreadyAdded = isInList(product);
+                const hasImage =
+                  product.imageUrl &&
+                  product.imageUrl !== '/placeholder-bottle.svg';
                 return (
                   <button
                     key={product.id}
                     onClick={() => !alreadyAdded && handleProductSelect(product)}
                     disabled={alreadyAdded}
-                    className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all ${
+                    style={{ animationDelay: `${Math.min(index, 8) * 22}ms` }}
+                    className={`animate-result-in w-full flex items-center gap-3 p-3 rounded-xl transition-all ${
                       alreadyAdded
                         ? 'bg-eco-sage/10 opacity-60 cursor-not-allowed'
                         : 'bg-card hover:bg-secondary active:scale-[0.98]'
                     }`}
                   >
-                    {/* Product Icon */}
-                    <div className="w-12 h-14 flex-shrink-0 bg-gradient-to-b from-eco-cream to-secondary rounded-lg flex items-center justify-center">
-                      <Wine className="w-5 h-5 text-muted-foreground/40" />
+                    {/* Product Image */}
+                    <div className="relative w-12 h-14 flex-shrink-0 bg-gradient-to-b from-eco-cream to-secondary rounded-lg overflow-hidden flex items-center justify-center">
+                      {hasImage ? (
+                        <Image
+                          src={product.imageUrl}
+                          alt={product.name}
+                          fill
+                          sizes="48px"
+                          className="object-contain p-1"
+                        />
+                      ) : (
+                        <Wine className="w-5 h-5 text-muted-foreground/40" />
+                      )}
                     </div>
 
                     {/* Product Info */}
@@ -151,7 +167,7 @@ export function SearchDrawer({ isOpen, onOpenChange }: SearchDrawerProps) {
                       }`}
                     >
                       {alreadyAdded ? (
-                        <span className="text-xs">✓</span>
+                        <Check className="w-4 h-4" />
                       ) : (
                         <Plus className="w-4 h-4" />
                       )}
