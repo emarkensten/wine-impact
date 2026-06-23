@@ -27,7 +27,7 @@ export function ManualDrawer({ isOpen, onOpenChange }: ManualDrawerProps) {
           </DrawerTitle>
         </DrawerHeader>
 
-        <div className="flex-1 min-h-0 overflow-y-auto px-4 pb-8">
+        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-4 pb-8">
           <ManualProductForm onSuccess={handleSuccess} />
         </div>
       </DrawerContent>

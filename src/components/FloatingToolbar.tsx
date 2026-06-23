@@ -6,15 +6,23 @@ interface FloatingToolbarProps {
   onSearchClick: () => void;
   onScanClick: () => void;
   onManualClick: () => void;
+  /** Hidden + inert while a drawer is open, so it can't retain focus inside an aria-hidden subtree. */
+  isHidden?: boolean;
 }
 
 export function FloatingToolbar({
   onSearchClick,
   onScanClick,
   onManualClick,
+  isHidden = false,
 }: FloatingToolbarProps) {
   return (
-    <div className="fixed bottom-0 left-0 right-0 px-4 pb-6 pt-4 pointer-events-none z-50">
+    <div
+      inert={isHidden}
+      className={`fixed bottom-0 left-0 right-0 px-4 pb-6 pt-4 pointer-events-none z-50 transition-opacity duration-200 ${
+        isHidden ? 'opacity-0' : 'opacity-100'
+      }`}
+    >
       <div
         className="
           pointer-events-auto

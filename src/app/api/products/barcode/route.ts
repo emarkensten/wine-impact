@@ -22,7 +22,15 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    return NextResponse.json({ product });
+    return NextResponse.json(
+      { product },
+      {
+        headers: {
+          'Cache-Control':
+            'public, max-age=60, s-maxage=300, stale-while-revalidate=3600',
+        },
+      }
+    );
   } catch (error) {
     console.error('Barcode lookup error:', error);
     return NextResponse.json(

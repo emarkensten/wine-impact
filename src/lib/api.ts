@@ -16,9 +16,13 @@ export async function getCacheStatus(): Promise<CacheStatus> {
   return response.json();
 }
 
-export async function searchProducts(query: string): Promise<Product[]> {
+export async function searchProducts(
+  query: string,
+  signal?: AbortSignal
+): Promise<Product[]> {
   const response = await fetch(
-    `/api/products/search?q=${encodeURIComponent(query)}&limit=20`
+    `/api/products/search?q=${encodeURIComponent(query)}&limit=20`,
+    { signal }
   );
 
   if (!response.ok) {

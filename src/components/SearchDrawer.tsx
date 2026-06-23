@@ -97,7 +97,7 @@ export function SearchDrawer({ isOpen, onOpenChange }: SearchDrawerProps) {
         </div>
 
         {/* Scrollable results area */}
-        <div className="flex-1 min-h-0 overflow-y-auto px-4 pb-8">
+        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-4 pb-8">
           {/* Error Message */}
           {error && (
             <p className="text-sm text-destructive px-1 mb-3">{error}</p>

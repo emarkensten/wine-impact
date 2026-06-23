@@ -13,6 +13,17 @@ export default function Home() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isManualOpen, setIsManualOpen] = useState(false);
 
+  // Drop focus from the toolbar button before the drawer marks the
+  // background aria-hidden, so focus is never trapped in a hidden subtree.
+  const openSearch = () => {
+    (document.activeElement as HTMLElement | null)?.blur();
+    setIsSearchOpen(true);
+  };
+  const openManual = () => {
+    (document.activeElement as HTMLElement | null)?.blur();
+    setIsManualOpen(true);
+  };
+
   return (
     <main className="min-h-dvh flex flex-col bg-background texture-grain max-w-6xl mx-auto w-full">
       {/* Header */}
@@ -35,14 +46,14 @@ export default function Home() {
           <div className="flex items-center gap-1">
             {/* Desktop: action buttons in header */}
             <button
-              onClick={() => setIsSearchOpen(true)}
+              onClick={openSearch}
               className="hidden md:flex items-center gap-1.5 h-9 px-3 rounded-lg bg-eco-green text-white text-sm font-medium hover:bg-eco-forest transition-colors"
             >
               <Search className="w-4 h-4" />
               Sök
             </button>
             <button
-              onClick={() => setIsManualOpen(true)}
+              onClick={openManual}
               className="hidden md:flex items-center gap-1.5 h-9 px-3 rounded-lg border border-eco-amber/40 text-eco-amber text-sm font-medium hover:bg-eco-amber/10 transition-colors"
             >
               <PenLine className="w-4 h-4" />
@@ -62,9 +73,10 @@ export default function Home() {
       {/* Floating Toolbar - mobile only */}
       <div className="md:hidden">
         <FloatingToolbar
-          onSearchClick={() => setIsSearchOpen(true)}
+          onSearchClick={openSearch}
           onScanClick={() => {}} // TEMPORÄRT DOLD
-          onManualClick={() => setIsManualOpen(true)}
+          onManualClick={openManual}
+          isHidden={isSearchOpen || isManualOpen}
         />
       </div>
 

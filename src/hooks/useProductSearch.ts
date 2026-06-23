@@ -10,26 +10,42 @@ export function useProductSearch() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
+  const abortRef = useRef<AbortController | null>(null);
 
   const search = useCallback(async (searchQuery: string) => {
+    // Cancel any in-flight request so a slower, older response can't
+    // overwrite the results of a newer query.
+    abortRef.current?.abort();
+
     if (!searchQuery.trim()) {
       setResults([]);
       setError(null);
+      setIsLoading(false);
       return;
     }
+
+    const controller = new AbortController();
+    abortRef.current = controller;
 
     setIsLoading(true);
     setError(null);
 
     try {
-      const products = await searchProducts(searchQuery);
+      const products = await searchProducts(searchQuery, controller.signal);
       setResults(products);
     } catch (err) {
+      // Ignore aborts triggered by a newer search.
+      if (err instanceof DOMException && err.name === 'AbortError') {
+        return;
+      }
       const message = err instanceof Error ? err.message : 'Kunde inte söka. Försök igen.';
       setError(message);
       setResults([]);
     } finally {
-      setIsLoading(false);
+      // Only the latest request should clear the loading state.
+      if (abortRef.current === controller) {
+        setIsLoading(false);
+      }
     }
   }, []);
 
@@ -53,6 +69,8 @@ export function useProductSearch() {
     setQuery('');
     setResults([]);
     setError(null);
+    setIsLoading(false);
+    abortRef.current?.abort();
     if (debounceRef.current) {
       clearTimeout(debounceRef.current);
     }
@@ -61,6 +79,7 @@ export function useProductSearch() {
   // Cleanup on unmount
   useEffect(() => {
     return () => {
+      abortRef.current?.abort();
       if (debounceRef.current) {
         clearTimeout(debounceRef.current);
       }

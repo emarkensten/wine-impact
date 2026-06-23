@@ -3,5 +3,7 @@ import { getCacheStatus } from '@/lib/products-cache';
 
 export async function GET() {
   const status = getCacheStatus();
-  return NextResponse.json(status);
+  return NextResponse.json(status, {
+    headers: { 'Cache-Control': 'no-store' },
+  });
 }
