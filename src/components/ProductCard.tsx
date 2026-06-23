@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { memo, useState } from 'react';
 import Image from 'next/image';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -27,7 +27,7 @@ interface ProductCardProps {
   onSelect: (product: Product) => void;
 }
 
-export function ProductCard({ product, index, isSelected, onSelect }: ProductCardProps) {
+function ProductCardComponent({ product, index, isSelected, onSelect }: ProductCardProps) {
   const { getProductWithScore, removeProduct } = useClimate();
   const [isRemoving, setIsRemoving] = useState(false);
   const [touchStart, setTouchStart] = useState<number | null>(null);
@@ -214,3 +214,5 @@ export function ProductCard({ product, index, isSelected, onSelect }: ProductCar
     </div>
   );
 }
+
+export const ProductCard = memo(ProductCardComponent);

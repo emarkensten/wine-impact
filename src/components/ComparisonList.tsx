@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback, useMemo, useSyncExternalStore } from 'react';
 import { useClimate } from '@/context/ClimateContext';
 import { ProductCard } from './ProductCard';
 import { ProductDetailSheet } from './ProductDetailSheet';
@@ -9,41 +9,48 @@ import { MethodologySheet } from './MethodologySheet';
 import type { Product } from '@/types';
 import { Wine, Sparkles, Info, BarChart3 } from 'lucide-react';
 
+const DESKTOP_QUERY = '(min-width: 768px)';
+
 function useIsDesktop() {
-  const [isDesktop, setIsDesktop] = useState(false);
-
-  useEffect(() => {
-    const mql = window.matchMedia('(min-width: 768px)');
-    setIsDesktop(mql.matches);
-    const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
-    mql.addEventListener('change', handler);
-    return () => mql.removeEventListener('change', handler);
-  }, []);
-
-  return isDesktop;
+  return useSyncExternalStore(
+    (onChange) => {
+      const mql = window.matchMedia(DESKTOP_QUERY);
+      mql.addEventListener('change', onChange);
+      return () => mql.removeEventListener('change', onChange);
+    },
+    () => window.matchMedia(DESKTOP_QUERY).matches,
+    () => false
+  );
 }
 
 export function ComparisonList() {
   const { comparisonList, getSortedProducts, removeProduct, isLoaded } = useClimate();
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const isDesktop = useIsDesktop();
 
-  const sortedList = isLoaded ? getSortedProducts() : [];
+  // Memoize so the sort doesn't rerun on every render.
+  const sortedList = useMemo(
+    () => (isLoaded ? getSortedProducts() : []),
+    [isLoaded, getSortedProducts]
+  );
 
-  // Auto-select first product on desktop when list changes
-  useEffect(() => {
-    if (!isDesktop || sortedList.length === 0) return;
+  const handleSelect = useCallback((product: Product) => setSelectedId(product.id), []);
 
-    // If nothing is selected, or selected product was removed, select first
-    if (!selectedProduct || !sortedList.find(p => p.id === selectedProduct.id)) {
-      setSelectedProduct(sortedList[0]);
-    }
-  }, [isDesktop, sortedList, selectedProduct]);
+  // Derive the active product during render instead of syncing via an effect:
+  // honour the user's pick if it's still in the list, otherwise auto-pick the
+  // first item on desktop (the detail panel is always visible there).
+  const selectedProduct = useMemo(() => {
+    const picked = selectedId
+      ? sortedList.find((p) => p.id === selectedId) ?? null
+      : null;
+    if (picked) return picked;
+    return isDesktop ? sortedList[0] ?? null : null;
+  }, [selectedId, sortedList, isDesktop]);
 
   const handleRemoveSelected = useCallback(() => {
     if (!selectedProduct) return;
     removeProduct(selectedProduct.id);
-    setSelectedProduct(null);
+    setSelectedId(null);
   }, [selectedProduct, removeProduct]);
 
   if (!isLoaded) {
@@ -104,7 +111,7 @@ export function ComparisonList() {
                 product={product}
                 index={index}
                 isSelected={isDesktop && selectedProduct?.id === product.id}
-                onSelect={setSelectedProduct}
+                onSelect={handleSelect}
               />
             ))}
           </div>
@@ -150,7 +157,7 @@ export function ComparisonList() {
         <ProductDetailSheet
           product={selectedProduct}
           isOpen={!!selectedProduct}
-          onClose={() => setSelectedProduct(null)}
+          onClose={() => setSelectedId(null)}
         />
       )}
     </>

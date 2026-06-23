@@ -126,6 +126,7 @@ export function BarcodeScanner({ isOpen, onClose }: BarcodeScannerProps) {
           variant="ghost"
           size="icon"
           onClick={handleClose}
+          aria-label="Stäng skanner"
           className="text-white hover:bg-white/10"
         >
           <X className="w-5 h-5" />

@@ -84,6 +84,7 @@ export function SearchDrawer({ isOpen, onOpenChange }: SearchDrawerProps) {
               {query && !isLoading && (
                 <button
                   onClick={clearSearch}
+                  aria-label="Rensa sökning"
                   className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-muted transition-colors"
                 >
                   <X className="w-4 h-4 text-muted-foreground" />

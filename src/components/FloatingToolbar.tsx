@@ -1,6 +1,6 @@
 'use client';
 
-import { Search, ScanBarcode, PenLine } from 'lucide-react';
+import { Search, PenLine } from 'lucide-react';
 
 interface FloatingToolbarProps {
   onSearchClick: () => void;

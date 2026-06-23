@@ -95,6 +95,12 @@ function ImpactRing({
       <svg
         width={size}
         height={size}
+        role="img"
+        aria-label={`Klimatpoäng ${score} av 100. Fördelning: förpackning ${Math.round(
+          packagingPercent
+        )}%, transport ${Math.round(transportPercent)}%, produktion ${Math.round(
+          productionPercent
+        )}%.`}
         className="transform -rotate-90"
         style={{ filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.08))' }}
       >

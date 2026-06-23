@@ -25,7 +25,12 @@ export function SortButton() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="rounded-full">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="rounded-full"
+          aria-label={`Sortera (${options.find((o) => o.value === sortOption)?.label})`}
+        >
           <ArrowUpDown className="w-4 h-4" />
         </Button>
       </DropdownMenuTrigger>

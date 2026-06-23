@@ -51,6 +51,20 @@ let loadError: string | null = null;
 
 const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
 const CACHE_FILE = path.join(process.cwd(), '.cache', 'products.json');
+const MAX_SEARCH_LIMIT = 50;
+
+/**
+ * Fold a string for diacritic-insensitive search:
+ * "Rosé" -> "rose", "Gråström" -> "grastrom".
+ * This lets users find products without typing Swedish/French accents.
+ */
+function normalize(text: string): string {
+  return text
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
+}
 
 export interface CacheStatus {
   isLoaded: boolean;
@@ -114,7 +128,9 @@ function mapProduct(item: SystembolagetProduct): CachedProduct {
     category,
     producer: item.producerName,
     alcoholPercentage: item.alcoholPercentage,
-    searchText: `${name} ${item.producerName || ''} ${category || ''} ${originCountry} ${item.productNumber}`.toLowerCase(),
+    searchText: normalize(
+      `${name} ${item.producerName || ''} ${category || ''} ${originCountry} ${item.productNumber}`
+    ),
   };
 }
 
@@ -169,6 +185,8 @@ export async function getProducts(): Promise<CachedProduct[]> {
       await new Promise(resolve => setTimeout(resolve, 100));
     }
     if (productsCache) return productsCache;
+    // The in-flight load failed; surface that instead of returning undefined.
+    throw new Error(loadError || 'Kunde inte ladda produkter.');
   }
 
   isLoading = true;
@@ -215,26 +233,36 @@ export async function getProducts(): Promise<CachedProduct[]> {
 
 export async function searchProducts(query: string, limit: number = 20): Promise<CachedProduct[]> {
   const products = await getProducts();
-  const lowerQuery = query.toLowerCase().trim();
+  const normalizedQuery = normalize(query);
 
-  if (!lowerQuery) {
+  if (!normalizedQuery) {
     return [];
   }
 
-  const terms = lowerQuery.split(/\s+/);
+  const safeLimit = Math.min(Math.max(1, limit), MAX_SEARCH_LIMIT);
+  const terms = normalizedQuery.split(/\s+/);
+  const firstTerm = terms[0];
 
   const matches = products.filter(product =>
     terms.every(term => product.searchText.includes(term))
   );
 
-  // Sort by relevance (name starts with query first)
-  matches.sort((a, b) => {
-    const aStartsWith = a.name.toLowerCase().startsWith(lowerQuery) ? 0 : 1;
-    const bStartsWith = b.name.toLowerCase().startsWith(lowerQuery) ? 0 : 1;
-    return aStartsWith - bStartsWith;
-  });
+  // Rank by how directly the product name matches (diacritic-folded), so
+  // "Barolo …" beats "… Barolo" and exact names come first. Falls back to
+  // any-term match for multi-word queries instead of being a no-op.
+  const score = (product: CachedProduct): number => {
+    const name = normalize(product.name);
+    if (name === normalizedQuery) return 0;
+    if (name.startsWith(normalizedQuery)) return 1;
+    if (name.startsWith(firstTerm)) return 2;
+    if (name.includes(normalizedQuery)) return 3;
+    if (name.includes(firstTerm)) return 4;
+    return 5;
+  };
 
-  return matches.slice(0, limit);
+  matches.sort((a, b) => score(a) - score(b));
+
+  return matches.slice(0, safeLimit);
 }
 
 export async function getProductByBarcode(barcode: string): Promise<CachedProduct | null> {

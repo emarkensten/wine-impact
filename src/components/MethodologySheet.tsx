@@ -10,7 +10,6 @@ import {
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { useClimate } from '@/context/ClimateContext';
-import { DEFAULT_CLIMATE_SETTINGS } from '@/lib/climate-calculator';
 import type { PackagingType, ProductionMethod, TransportMethod } from '@/types';
 import {
   Settings,
@@ -23,8 +22,6 @@ import {
   Box,
   Droplets,
   Calculator,
-  X,
-  HelpCircle,
   Trash2,
 } from 'lucide-react';
 
@@ -88,6 +85,7 @@ export function MethodologySheet({ trigger }: MethodologySheetProps) {
       variant="ghost"
       size="icon"
       className="rounded-full hover:bg-eco-green/10"
+      aria-label="Inställningar och metodik"
     >
       <Settings className="w-5 h-5 text-foreground" />
     </Button>
