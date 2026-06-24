@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/drawer';
 import { Input } from '@/components/ui/input';
 import { useProductSearch } from '@/hooks/useProductSearch';
+import { useKeyboardAwareDrawerStyle } from '@/hooks/useVisualViewportHeight';
 import { useClimate } from '@/context/ClimateContext';
 import type { Product } from '@/types';
 import {
@@ -35,6 +36,9 @@ export function SearchDrawer({ isOpen, onOpenChange }: SearchDrawerProps) {
     useProductSearch();
   const { addProduct, comparisonList } = useClimate();
   const inputRef = useRef<HTMLInputElement>(null);
+  // Keep the search header above the iOS keyboard (see hook). Paired with
+  // repositionInputs={false} on the Drawer below.
+  const contentStyle = useKeyboardAwareDrawerStyle();
 
   const handleProductSelect = (product: Product) => {
     addProduct(product);
@@ -59,8 +63,11 @@ export function SearchDrawer({ isOpen, onOpenChange }: SearchDrawerProps) {
   }, [isOpen, clearSearch]);
 
   return (
-    <Drawer open={isOpen} onOpenChange={onOpenChange}>
-      <DrawerContent className="max-h-[calc(100dvh-40px)] rounded-t-3xl flex flex-col">
+    <Drawer open={isOpen} onOpenChange={onOpenChange} repositionInputs={false}>
+      <DrawerContent
+        style={contentStyle}
+        className="max-h-[calc(100dvh-40px)] rounded-t-3xl flex flex-col"
+      >
         {/* Fixed header with search input */}
         <div className="flex-shrink-0 bg-background rounded-t-3xl">
           <DrawerHeader className="pb-2">
